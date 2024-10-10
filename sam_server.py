@@ -38,7 +38,7 @@ class SAM2:
         self.box_annotator = sv.BoxAnnotator(color=ColorPalette.from_hex(CUSTOM_COLOR_MAP))
         self.label_annotator = sv.LabelAnnotator(color=ColorPalette.from_hex(CUSTOM_COLOR_MAP))
         
-    def process(self, image_path, input_boxes, output_path):
+    def process_image(self, image_path, input_boxes, output_path):
         # input_boxes is numpy array
         image_name = image_path.split('/')[-1].split('.')[0]
         output_root = os.path.join(output_path, image_name)
@@ -60,7 +60,7 @@ class SAM2:
         if masks.ndim == 4:
             masks = masks.squeeze(1)
         np.save(output_result, masks)
-        return output_root
+        return output_root+'.npy'
     
 sam2_config_file = './sam_server_config.yaml'
 sam2 = SAM2(sam2_config_file)
@@ -74,7 +74,7 @@ def sam_segmentation():
     task = data['task']
     output_root = os.path.dirname(image_path)
     output_root = data.get('output_root', output_root)
-    sam2.process(image_path=image_path, input_boxes=input_boxes, output_path=output_root)
+    sam2.process_image(image_path=image_path, input_boxes=input_boxes, output_path=output_root)
     response = {}
     response['output_path'] = output_root
     return jsonify(response)      
