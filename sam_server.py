@@ -60,7 +60,7 @@ class SAM2:
         if masks.ndim == 4:
             masks = masks.squeeze(1)
         np.save(output_result, masks)
-        return output_root+'.npy'
+        return output_result+'.npy'
     
 sam2_config_file = './sam_server_config.yaml'
 sam2 = SAM2(sam2_config_file)
@@ -74,9 +74,10 @@ def sam_segmentation():
     task = data['task']
     output_root = os.path.dirname(image_path)
     output_root = data.get('output_root', output_root)
-    sam2.process_image(image_path=image_path, input_boxes=input_boxes, output_path=output_root)
+    output_file = sam2.process_image(image_path=image_path, input_boxes=input_boxes, output_path=output_root)
     response = {}
-    response['output_path'] = output_root
+    response['output_path'] = output_file
+    print(response)
     return jsonify(response)      
         
 if __name__ == '__main__':
