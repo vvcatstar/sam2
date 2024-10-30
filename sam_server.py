@@ -2,6 +2,7 @@ import yaml
 import os 
 import numpy as np
 import supervision as sv
+import time 
 
 from supervision.draw.color import ColorPalette
 from sam2.build_sam import build_sam2
@@ -68,6 +69,7 @@ sam2 = SAM2(sam2_config_file)
 app = Flask(__name__)
 @app.route('/sam_segmentation', methods=['POST'])
 def sam_segmentation():
+    start_time = time.time()
     data = request.get_json()
     image_path = data['image_path']
     input_boxes = data['input_boxes']
@@ -77,6 +79,9 @@ def sam_segmentation():
     output_file = sam2.process_image(image_path=image_path, input_boxes=input_boxes, output_root=output_root)
     response = {}
     response['output_path'] = output_file
+    end_time = time.time()
+    use_time = round(end_time - start_time, 3)
+    print(use_time)
     return jsonify(response)      
         
 if __name__ == '__main__':
